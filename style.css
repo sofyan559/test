@@ -1,8 +1,8 @@
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 0;
-    background: #f4f6f8;
+    background: #f0f2f5;
+    color: #333;
 }
 
 header {
@@ -12,8 +12,15 @@ header {
     text-align: center;
 }
 
+header .tagline {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+}
+
 main {
     padding: 20px;
+    max-width: 1000px;
+    margin: auto;
 }
 
 .new-task-form {
@@ -23,9 +30,27 @@ main {
     margin-bottom: 20px;
 }
 
-#board {
+.new-task-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.new-task-form button {
+    padding: 10px 20px;
+    background: #3f51b5;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.board {
     display: flex;
     gap: 20px;
+    align-items: flex-start;
 }
 
 .column {
@@ -34,17 +59,24 @@ main {
     border-radius: 4px;
     flex: 1;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
 }
 
 .column h2 {
     text-align: center;
-    margin-top: 0;
+    margin: 0 0 10px;
+    color: #555;
+}
+
+.column.highlight {
+    background: #e3f2fd;
 }
 
 .task-list {
     list-style: none;
     padding: 0;
-    min-height: 50px;
+    min-height: 60px;
 }
 
 .task {
@@ -57,17 +89,17 @@ main {
     justify-content: space-between;
     align-items: center;
     cursor: grab;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .task.dragging {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
-.task button {
-    margin-left: 5px;
-}
-
-.completed {
-    text-decoration: line-through;
-    color: #888;
+.task .delete {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    font-size: 1rem;
+    cursor: pointer;
 }
