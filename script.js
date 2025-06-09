@@ -1,4 +1,4 @@
-// Simple Kanban functionality
+// Enhanced Kanban functionality with drag and drop
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('todo-form');
@@ -19,9 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
         updateButtons(task);
     });
 
+    // Sample tasks to show the board on first load
+    ['Research project', 'Prepare slides', 'Team meeting'].forEach(text => {
+        const task = createTask(text);
+        todoList.appendChild(task);
+        updateButtons(task);
+    });
+
     function createTask(text) {
         const li = document.createElement('li');
         li.className = 'task';
+        li.setAttribute('draggable', 'true');
+        li.addEventListener('dragstart', () => li.classList.add('dragging'));
+        li.addEventListener('dragend', () => li.classList.remove('dragging'));
+
         const span = document.createElement('span');
         span.textContent = text;
         const prevBtn = document.createElement('button');
@@ -29,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevBtn.className = 'prev';
         prevBtn.addEventListener('click', () => moveTask(li, -1));
         const nextBtn = document.createElement('button');
-        nextBtn.textContent = '>'; 
+        nextBtn.textContent = '>';
         nextBtn.className = 'next';
         nextBtn.addEventListener('click', () => moveTask(li, 1));
         li.appendChild(span);
@@ -37,6 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
         li.appendChild(nextBtn);
         return li;
     }
+
+    // Drag and drop target handling
+    lists.forEach(list => {
+        list.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const dragging = document.querySelector('.dragging');
+            if (dragging && dragging.parentElement !== list) {
+                list.appendChild(dragging);
+                updateButtons(dragging);
+            }
+        });
+    });
 
     function moveTask(li, dir) {
         const parent = li.parentElement;
