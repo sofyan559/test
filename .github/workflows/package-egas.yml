@@ -60,18 +60,20 @@ jobs:
           console.log({fritzingCount, customCount});
           NODE
 
-      - name: Build WordPress plugin ZIP
+      - name: Build WordPress packages
         run: |
-          mkdir -p dist releases
+          mkdir -p dist releases artifact
           zip -qr dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip eg-arduino-simulator
           cp dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip releases/
+          cp -a eg-arduino-simulator artifact/
           unzip -t dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip
+          test -f artifact/eg-arduino-simulator/eg-arduino-simulator.php
 
-      - name: Upload package artifact
+      - name: Upload directly installable artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eg-arduino-simulator-v2.0.8
-          path: dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip
+          name: eg-arduino-simulator-v2.0.8-direct-install
+          path: artifact/
           if-no-files-found: error
           retention-days: 14
 
