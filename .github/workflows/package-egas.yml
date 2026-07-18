@@ -34,10 +34,13 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const catalog = fs.readFileSync('eg-arduino-simulator/assets/js/catalog.js', 'utf8');
+          const php = fs.readFileSync('eg-arduino-simulator/eg-arduino-simulator.php', 'utf8');
           const css = fs.readFileSync('eg-arduino-simulator/assets/css/app.css', 'utf8');
+          const allSources = `${catalog}\n${php}`;
           const required = [
             'Wokwi-Chip-L298N',
             'Wokwi-Chip-TB6612FNG',
+            'Wokwi-Chip-stepper-esc',
             'wokwi-bme280-custom-chip',
             'wokwi-aht25-custom-chip',
             'wokwi-ds1820-custom-chip',
@@ -46,10 +49,10 @@ jobs:
             'NRF24L01_fix.fzp'
           ];
           for (const item of required) {
-            if (!catalog.includes(item)) throw new Error(`Missing catalog source: ${item}`);
+            if (!allSources.includes(item)) throw new Error(`Missing component source: ${item}`);
           }
-          const fritzingCount = (catalog.match(/fritzing\('/g) || []).length;
-          const customCount = (catalog.match(/custom\('/g) || []).length;
+          const fritzingCount = (catalog.match(/fritzing\('/g) || []).length - 1;
+          const customCount = (catalog.match(/custom\('/g) || []).length - 1;
           if (fritzingCount < 20) throw new Error(`Only ${fritzingCount} Fritzing components`);
           if (customCount < 10) throw new Error(`Only ${customCount} community custom chips`);
           if (!css.includes('.egas-wire-layer { z-index: 20')) throw new Error('Wire layer is not above artwork');
