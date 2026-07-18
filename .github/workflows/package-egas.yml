@@ -1,0 +1,60 @@
+name: Package EG Arduino Simulator
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'eg-arduino-simulator/**'
+      - '.github/workflows/package-egas.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate PHP
+        run: php -l eg-arduino-simulator/eg-arduino-simulator.php
+
+      - name: Validate JavaScript
+        run: |
+          node --check eg-arduino-simulator/assets/js/catalog.js
+          node --check eg-arduino-simulator/assets/js/app.js
+
+      - name: Audit catalog and layer order
+        run: |
+          test "$(grep -c "kind: 'fritzing'" eg-arduino-simulator/assets/js/catalog.js)" -ge 1
+          grep -q "Wokwi-Chip-L298N" eg-arduino-simulator/assets/js/catalog.js
+          grep -q "wokwi-bme280-custom-chip" eg-arduino-simulator/assets/js/catalog.js
+          grep -q "Half_breadboard_v2.fzp" eg-arduino-simulator/assets/js/catalog.js
+          grep -q "egas-wire-layer { z-index: 20" eg-arduino-simulator/assets/css/app.css
+          grep -q "egas-pin-layer { z-index: 30" eg-arduino-simulator/assets/css/app.css
+
+      - name: Build WordPress plugin ZIP
+        run: |
+          mkdir -p dist releases
+          zip -qr dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip eg-arduino-simulator
+          cp dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip releases/
+          unzip -t dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eg-arduino-simulator-v2.0.8
+          path: dist/eg-arduino-simulator-v2.0.8-real-custom-chips.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit packaged ZIP to branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "EGAS Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add releases/eg-arduino-simulator-v2.0.8-real-custom-chips.zip
+          git diff --cached --quiet || git commit -m "Build EG Arduino Simulator v2.0.8 ZIP"
+          git push origin HEAD:${{ github.head_ref }}
