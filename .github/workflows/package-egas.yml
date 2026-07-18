@@ -15,8 +15,11 @@ jobs:
   validate-and-package:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
 
       - name: Validate PHP
         run: php -l eg-arduino-simulator/eg-arduino-simulator.php
@@ -28,12 +31,31 @@ jobs:
 
       - name: Audit catalog and layer order
         run: |
-          test "$(grep -c "kind: 'fritzing'" eg-arduino-simulator/assets/js/catalog.js)" -ge 1
-          grep -q "Wokwi-Chip-L298N" eg-arduino-simulator/assets/js/catalog.js
-          grep -q "wokwi-bme280-custom-chip" eg-arduino-simulator/assets/js/catalog.js
-          grep -q "Half_breadboard_v2.fzp" eg-arduino-simulator/assets/js/catalog.js
-          grep -q "egas-wire-layer { z-index: 20" eg-arduino-simulator/assets/css/app.css
-          grep -q "egas-pin-layer { z-index: 30" eg-arduino-simulator/assets/css/app.css
+          node <<'NODE'
+          const fs = require('fs');
+          const catalog = fs.readFileSync('eg-arduino-simulator/assets/js/catalog.js', 'utf8');
+          const css = fs.readFileSync('eg-arduino-simulator/assets/css/app.css', 'utf8');
+          const required = [
+            'Wokwi-Chip-L298N',
+            'Wokwi-Chip-TB6612FNG',
+            'wokwi-bme280-custom-chip',
+            'wokwi-aht25-custom-chip',
+            'wokwi-ds1820-custom-chip',
+            'Half_breadboard_v2.fzp',
+            'HC-05-male_fix.fzp',
+            'NRF24L01_fix.fzp'
+          ];
+          for (const item of required) {
+            if (!catalog.includes(item)) throw new Error(`Missing catalog source: ${item}`);
+          }
+          const fritzingCount = (catalog.match(/fritzing\('/g) || []).length;
+          const customCount = (catalog.match(/custom\('/g) || []).length;
+          if (fritzingCount < 20) throw new Error(`Only ${fritzingCount} Fritzing components`);
+          if (customCount < 10) throw new Error(`Only ${customCount} community custom chips`);
+          if (!css.includes('.egas-wire-layer { z-index: 20')) throw new Error('Wire layer is not above artwork');
+          if (!css.includes('.egas-pin-layer { z-index: 30')) throw new Error('Pin layer is not above wires');
+          console.log({fritzingCount, customCount});
+          NODE
 
       - name: Build WordPress plugin ZIP
         run: |
