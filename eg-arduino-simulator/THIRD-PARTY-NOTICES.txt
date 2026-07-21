@@ -1,0 +1,50 @@
+EG Arduino Simulator 2.0.8 — Third-Party Notices
+=================================================
+
+This plugin loads or displays component artwork and metadata from the following open-source projects. The source repositories remain the authoritative source for each asset and license.
+
+Wokwi Elements
+---------------
+Repository: https://github.com/wokwi/wokwi-elements
+Package: @wokwi/elements 1.9.2
+License: MIT
+Copyright: CodeMagic LTD and contributors
+
+Wokwi Documentation Artwork
+---------------------------
+Repository: https://github.com/wokwi/wokwi-docs
+License: MIT
+
+Fritzing Parts Library
+----------------------
+Repository: https://github.com/fritzing/fritzing-parts
+Graphics and documentation license: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+Attribution: Fritzing — https://fritzing.org/
+The plugin loads selected breadboard-view SVG files and connector metadata through a same-origin caching proxy.
+
+Wokwi Community Custom Chips
+-----------------------------
+The catalog can load original chip manifests and artwork from these repositories:
+
+- drf5n/Wokwi-Chip-L298N
+- drf5n/Wokwi-Chip-TB6612FNG
+- drf5n/Wokwi-Chip-stepper-esc
+- drf5n/Wokwi-Chip-FrequencyCounter
+- drf5n/Wokwi-Chip-Schmitt-Trigger
+- drf5n/Wokwi-Chip-LimitCounter
+- bonnyr/wokwi-bme280-custom-chip
+- bonnyr/wokwi-ds1820-custom-chip
+- fido974/wokwi-aht25-custom-chip
+- martysweet/st7735-wokwi-chip
+- djedu28/wokwi-rdm6300-custom-chip
+- anton21m/wokwi-rc522-rfid-chip
+
+Consult each repository for its exact license and attribution requirements. The plugin does not claim ownership of those packages.
+
+CodeMirror
+----------
+CodeMirror 5.65.16
+Repository: https://github.com/codemirror/codemirror5
+License: MIT
+
+The custom L298N module body and TT motor artwork included directly in this plugin are original interactive SVG assets created for Engineering Geniuses. Their pin models are designed to interoperate with the community-chip catalog.
